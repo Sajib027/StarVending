@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">StarKey Vending</string>
+
+    <string name="vend_dlg_insert_coin">Insert coins</string>
+    <string name="vend_dlg_invalid">Coins must be in USD and one of: .05, .10, or .25.</string>
+
+    <string name="vend_coin">Use nickels, dimes, quarters</string>
+    <string name="vend_display_default">INSERT COINS</string>
+    <string name="vend_action_return">Return</string>
+    <string name="vend_action_purchase_default">Product Name</string>
+    <string name="vend_action_insert">Insert Coins</string>
+    <string name="vend_action_collect_default">Collect Change</string>
+    <string name="vend_action_collect" formatted="true">Change: $%3.2f</string>
+    <string name="vend_img_samples">Snacks</string>
+</resources>

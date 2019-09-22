@@ -1,0 +1,14 @@
+
+# Others
+~$*
+*~
+[Tt]humbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+.DS_Store
+*.swp
+local.properties
+.gradle/
+.idea/
+build/
+*.iml
