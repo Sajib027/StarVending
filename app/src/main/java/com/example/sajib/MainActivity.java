@@ -32,19 +32,14 @@ public class MainActivity extends AppCompatActivity
         viewModel = ViewModelProviders.of(this).get(VendingMachineViewModel.class);
         viewModel.init(VendingMachineRepository.getInstance());
 
-        viewModel.getVendingMachineDisplay().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String vendingDisplay) {
-                ((TextView) findViewById(R.id.vend_display)).setText(vendingDisplay);
-            }
-        });
+        viewModel.getVendingMachineDisplay().observe(this, vendingDisplay ->
+                ((TextView) findViewById(R.id.vend_display)).setText(vendingDisplay));
 
-        viewModel.getVendingMachineChangeDisplay().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String vendingChangeDisplay) {
-                ((TextView) findViewById(R.id.vend_btn_collect)).setText(vendingChangeDisplay);
-            }
-        });
+        viewModel.getVendingMachinePriceDisplay().observe(this, vendingChangeDisplay ->
+                ((TextView) findViewById(R.id.vend_btn_chart)).setText(vendingChangeDisplay));
+
+        viewModel.getVendingMachineChangeDisplay().observe(this, vendingChangeDisplay ->
+                ((TextView) findViewById(R.id.vend_btn_collect)).setText(vendingChangeDisplay));
 
         final TextView product1 = findViewById(R.id.vend_btn_purchase_1);
         final TextView product2 = findViewById(R.id.vend_btn_purchase_2);

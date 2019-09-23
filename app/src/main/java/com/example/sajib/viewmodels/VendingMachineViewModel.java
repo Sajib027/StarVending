@@ -13,6 +13,7 @@ import com.example.sajib.models.VendingMachine;
 
 public final class VendingMachineViewModel extends AndroidViewModel {
     private final MutableLiveData<String> display = new MutableLiveData<>();
+    private final MutableLiveData<String> chart = new MutableLiveData<>();
     private final MutableLiveData<String> change = new MutableLiveData<>();
     private final MutableLiveData<String> product1 = new MutableLiveData<>();
     private final MutableLiveData<String> product2 = new MutableLiveData<>();
@@ -46,6 +47,10 @@ public final class VendingMachineViewModel extends AndroidViewModel {
 
     public LiveData<String> getVendingMachineChangeDisplay() {
         return change;
+    }
+
+    public LiveData<String> getVendingMachinePriceDisplay() {
+        return chart;
     }
 
     public LiveData<String> getVendingMachineProductDisplay(int productIndex) {
