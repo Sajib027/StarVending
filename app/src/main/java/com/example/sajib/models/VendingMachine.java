@@ -68,7 +68,9 @@ public class VendingMachine {
         Product product = stock.getProduct();
 
         if (currencyInUsc - product.getCostInUsc() < 0) {
-            lastMessage = MSG_NORMAL_INSUFICIENT_BALANCE;
+            lastMessage = String.format(
+                    MSG_NORMAL_INSUFICIENT_BALANCE,
+                    (float) product.getCostInUsc() / 100);
             return false;
         } else {
             stock.reduceAvailable();
