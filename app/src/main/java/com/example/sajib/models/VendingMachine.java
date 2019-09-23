@@ -14,30 +14,22 @@ public class VendingMachine {
 
     private static final String FORMAT = "$%3.2f";
     private static final String MSG_INSERT_COIN = "Insert Coins";
-    private static final String MSG_STATIC_EXACT_CHANGE_ONLY = "EXACT CHANGE ONLY";
-    private static final String MSG_FORMAT_PRICE = "PRICE $%3.2f";
+    private static final String MSG_PRICE_CHART = "Coke 50 cents, Chips 25 cents, Cokies 10 cents, Chocolate 65 cents";
     private static final String MSG_NORMAL_SOLD_OUT = "SOLD OUT";
+    private static final String MSG_NORMAL_INSUFICIENT_BALANCE = "Price $%3.2f, your balance is insufficient";
     private static final String MSG_THANK_YOU = "Collect your product, thank you";
 
     private final List<Stock> availableStock;
 
     private int currencyInUsc = 0;
     private int returnInUsc = 0;
-
-    private int changeInUsc = 400;
+    private int changeInUsc = 0;
 
     private String lastMessage = MSG_INSERT_COIN;
+
     public VendingMachine(@NonNull List<Stock> availableStock) {
         this.availableStock = availableStock;
-        this.updateAndGetCurrentMessageForDisplay();
-    }
-
-    @Override
-    public String toString() {
-        return String.format("$%3.2f in flight, $%3.2f in change, and %d products",
-                (float) currencyInUsc / 100,
-                (float) changeInUsc / 100,
-                availableStock.size());
+        updateAndGetCurrentMessageForDisplay();
     }
 
     public boolean insertCoin(int usc) {
@@ -45,29 +37,18 @@ public class VendingMachine {
             case COIN_NICKEL:
             case COIN_DIME:
             case COIN_QUARTER:
-                this.currencyInUsc += usc;
-                this.lastMessage = String.format( FORMAT, (float) this.currencyInUsc / 100);
+                currencyInUsc += usc;
+                lastMessage = String.format(FORMAT, (float) this.currencyInUsc / 100);
                 return true;
             default:
-                this.returnInUsc += usc;
+                returnInUsc += usc;
                 return false;
         }
     }
 
-    @NonNull
     public String updateAndGetCurrentMessageForDisplay() {
         String msgToDeliver = this.lastMessage;
-        if (this.currencyInUsc == 0) {
-            this.lastMessage = MSG_INSERT_COIN;
-        } else {
-            this.lastMessage = String.format(FORMAT,
-                    (float) this.currencyInUsc / 100);
-        }
         return msgToDeliver;
-    }
-
-    public int getAcceptedUsc() {
-        return currencyInUsc;
     }
 
     public int getUscInReturn() {
@@ -81,34 +62,37 @@ public class VendingMachine {
 
     private boolean tryToPurchase(@NonNull final Stock stock) {
         if (stock.getAvailable() == 0) {
-            this.lastMessage = MSG_NORMAL_SOLD_OUT;
+            lastMessage = MSG_NORMAL_SOLD_OUT;
             return false;
         }
         Product product = stock.getProduct();
 
-        if (this.currencyInUsc - product.getCostInUsc() < 0) {
-            this.lastMessage = String.format(MSG_FORMAT_PRICE,
-                    (float) product.getCostInUsc() / 100);
+        if (currencyInUsc - product.getCostInUsc() < 0) {
+            lastMessage = MSG_NORMAL_INSUFICIENT_BALANCE;
             return false;
         } else {
             stock.reduceAvailable();
-            this.currencyInUsc -= product.getCostInUsc();
-            this.changeInUsc -= this.currencyInUsc;
-            this.returnInUsc += this.currencyInUsc;
-            this.currencyInUsc = 0;
-            this.lastMessage = MSG_THANK_YOU;
+            currencyInUsc -= product.getCostInUsc();
+            changeInUsc -= currencyInUsc;
+            returnInUsc += currencyInUsc;
+            currencyInUsc = 0;
+            lastMessage = MSG_THANK_YOU;
             return true;
         }
     }
 
+    public void priceChart() {
+        lastMessage = MSG_PRICE_CHART;
+    }
+
     public void returnCoins() {
-        this.returnInUsc += this.currencyInUsc;
-        this.currencyInUsc = 0;
-        this.updateAndGetCurrentMessageForDisplay();
+        returnInUsc += this.currencyInUsc;
+        currencyInUsc = 0;
+        updateAndGetCurrentMessageForDisplay();
     }
 
     public void collectCoins() {
-        this.returnInUsc = 0;
+        returnInUsc = 0;
     }
 
     public List<Product> getProducts() {

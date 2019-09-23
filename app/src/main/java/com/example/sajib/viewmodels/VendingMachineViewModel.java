@@ -4,8 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.util.List;
 
@@ -28,11 +26,11 @@ public final class VendingMachineViewModel extends AndroidViewModel {
     }
 
     public void init(VendingMachineRepository vendingMachineRepository) {
-        if (this.vendingMachine == null) {
-            this.vendingMachine = vendingMachineRepository.getVendingMachine();
+        if (vendingMachine == null) {
+            vendingMachine = vendingMachineRepository.getVendingMachine();
 
             // initialize live data
-            List<Product> products = this.vendingMachine.getProducts();
+            List<Product> products = vendingMachine.getProducts();
             product1.setValue(products.get(0).getName());
             product2.setValue(products.get(1).getName());
             product3.setValue(products.get(2).getName());
@@ -43,23 +41,23 @@ public final class VendingMachineViewModel extends AndroidViewModel {
     }
 
     public LiveData<String> getVendingMachineDisplay() {
-        return this.display;
+        return display;
     }
 
     public LiveData<String> getVendingMachineChangeDisplay() {
-        return this.change;
+        return change;
     }
 
     public LiveData<String> getVendingMachineProductDisplay(int productIndex) {
         switch (productIndex) {
             case 0:
-                return this.product1;
+                return product1;
             case 1:
-                return this.product2;
+                return product2;
             case 2:
-                return this.product3;
+                return product3;
             case 3:
-                return  this.product4;
+                return product4;
             default:
                 throw new IllegalArgumentException(
                         "Only 4 products available but item " + (productIndex - 1) + " was requested");
@@ -67,49 +65,56 @@ public final class VendingMachineViewModel extends AndroidViewModel {
     }
 
     public void collectCoins() {
-        if (this.vendingMachine == null) {
+        if (vendingMachine == null) {
             throw new UnsupportedOperationException("you must call init() before calling any other methods in this view model");
         }
-
-        this.vendingMachine.collectCoins();
+        vendingMachine.collectCoins();
         updateDisplay();
     }
 
     public boolean insertCoin(int coinValue) {
-        if (this.vendingMachine == null) {
+        if (vendingMachine == null) {
             throw new UnsupportedOperationException("you must call init() before calling any other methods in this view model");
         }
 
-        final boolean result = this.vendingMachine.insertCoin(coinValue);
+        final boolean result = vendingMachine.insertCoin(coinValue);
         updateDisplay();
         return result;
     }
 
     public void purchaseProduct(int productIndex) {
-        if (this.vendingMachine == null) {
+        if (vendingMachine == null) {
             throw new UnsupportedOperationException("you must call init() before calling any other methods in this view model");
         }
 
-        this.vendingMachine.purchaseProduct(productIndex);
+        vendingMachine.purchaseProduct(productIndex);
+        updateDisplay();
+    }
+
+    public void priceChart() {
+        if (vendingMachine == null) {
+            throw new UnsupportedOperationException("you must call init() before calling any other methods in this view model");
+        }
+        vendingMachine.priceChart();
         updateDisplay();
     }
 
     public void returnCoins() {
-        if (this.vendingMachine == null) {
+        if (vendingMachine == null) {
             throw new UnsupportedOperationException("you must call init() before calling any other methods in this view model");
         }
 
-        this.vendingMachine.returnCoins();
+        vendingMachine.returnCoins();
         updateDisplay();
     }
 
     private void updateDisplay() {
-        if (this.vendingMachine == null) {
+        if (vendingMachine == null) {
             throw new UnsupportedOperationException("you must call init() before calling any other methods in this view model");
         }
 
-        this.display.setValue(this.vendingMachine.updateAndGetCurrentMessageForDisplay());
-        this.change.setValue(this.getApplication().getResources().getString(R.string.vend_action_collect,
-                        (float) this.vendingMachine.getUscInReturn() / 100));
+        display.setValue(vendingMachine.updateAndGetCurrentMessageForDisplay());
+        change.setValue(getApplication().getResources().getString(R.string.vend_action_collect,
+                (float) vendingMachine.getUscInReturn() / 100));
     }
 }

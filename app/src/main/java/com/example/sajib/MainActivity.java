@@ -1,9 +1,10 @@
 package com.example.sajib;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -12,31 +13,38 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.sajib.R;
 import com.example.sajib.viewmodels.VendingMachineRepository;
 import com.example.sajib.viewmodels.VendingMachineViewModel;
 
 public class MainActivity extends AppCompatActivity
         implements View.OnClickListener, AlertDialog.OnClickListener {
-    private AlertDialog dlgInsertCoins;
+    private AlertDialog insertCoins;
 
-    private EditText dlgInsertCoinsInput;
+    private EditText insertCoinsInput;
 
     private VendingMachineViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);
 
         viewModel = ViewModelProviders.of(this).get(VendingMachineViewModel.class);
         viewModel.init(VendingMachineRepository.getInstance());
 
-        viewModel.getVendingMachineDisplay().observe(this, vendingDisplay ->
-                ((TextView) findViewById(R.id.vend_display)).setText(vendingDisplay));
+        viewModel.getVendingMachineDisplay().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String vendingDisplay) {
+                ((TextView) findViewById(R.id.vend_display)).setText(vendingDisplay);
+            }
+        });
 
-        viewModel.getVendingMachineChangeDisplay().observe(this, vendingChangeDisplay ->
-                ((TextView) findViewById(R.id.vend_btn_collect)).setText(vendingChangeDisplay));
+        viewModel.getVendingMachineChangeDisplay().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String vendingChangeDisplay) {
+                ((TextView) findViewById(R.id.vend_btn_collect)).setText(vendingChangeDisplay);
+            }
+        });
 
         final TextView product1 = findViewById(R.id.vend_btn_purchase_1);
         final TextView product2 = findViewById(R.id.vend_btn_purchase_2);
@@ -48,19 +56,21 @@ public class MainActivity extends AppCompatActivity
         viewModel.getVendingMachineProductDisplay(3).observe(this, product4::setText);
 
         // handlers
+        findViewById(R.id.vend_btn_chart).setOnClickListener(this);
         findViewById(R.id.vend_btn_return).setOnClickListener(this);
         findViewById(R.id.vend_btn_insert).setOnClickListener(this);
         product1.setOnClickListener(this);
         product2.setOnClickListener(this);
         product3.setOnClickListener(this);
+        product4.setOnClickListener(this);
         findViewById(R.id.vend_btn_collect).setOnClickListener(this);
 
-        this.dlgInsertCoinsInput = new EditText(this);
-        this.dlgInsertCoinsInput.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        this.dlgInsertCoins = new AlertDialog.Builder(this)
+        insertCoinsInput = new EditText(this);
+        insertCoinsInput.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        insertCoins = new AlertDialog.Builder(this)
                 .setTitle(R.string.vend_dlg_insert_coin)
                 .setMessage(R.string.vend_coin)
-                .setView(this.dlgInsertCoinsInput)
+                .setView(insertCoinsInput)
                 .setPositiveButton(android.R.string.ok, this)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel())
                 .create();
@@ -69,47 +79,48 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.vend_btn_chart:
+                viewModel.priceChart();
+                break;
             case R.id.vend_btn_collect:
-                this.viewModel.collectCoins();
+                viewModel.collectCoins();
                 break;
             case R.id.vend_btn_insert:
-                this.dlgInsertCoins.show();
+                insertCoins.show();
                 return;
             case R.id.vend_btn_purchase_1:
-                this.viewModel.purchaseProduct(0);
+                viewModel.purchaseProduct(0);
                 break;
             case R.id.vend_btn_purchase_2:
-                this.viewModel.purchaseProduct(1);
+                viewModel.purchaseProduct(1);
                 break;
             case R.id.vend_btn_purchase_3:
-                this.viewModel.purchaseProduct(2);
+                viewModel.purchaseProduct(2);
                 break;
             case R.id.vend_btn_purchase_4:
-                this.viewModel.purchaseProduct(3);
+                viewModel.purchaseProduct(3);
                 break;
             case R.id.vend_btn_return:
-                this.viewModel.returnCoins();
+                viewModel.returnCoins();
                 break;
         }
     }
 
     @Override
-    public void onClick(@NonNull final DialogInterface dialog, final int which) {
+    public void onClick(final DialogInterface dialog, final int which) {
         try {
-            float usdValue = Float.parseFloat(this.dlgInsertCoinsInput.getText().toString());
+            float usdValue = Float.parseFloat(insertCoinsInput.getText().toString());
             int coinValue = (int) Math.floor(usdValue * 100);
 
-            if (this.viewModel.insertCoin(coinValue)) {
-                this.dlgInsertCoinsInput.setText("");
+            if (viewModel.insertCoin(coinValue)) {
+                insertCoinsInput.setText("");
             } else {
-                Toast.makeText(
-                        this, R.string.vend_dlg_invalid, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.vend_dlg_invalid, Toast.LENGTH_SHORT).show();
             }
         } catch (NumberFormatException exc) {
             Toast.makeText(
                     this, R.string.vend_dlg_invalid, Toast.LENGTH_SHORT).show();
         }
-
         dialog.dismiss();
     }
 }

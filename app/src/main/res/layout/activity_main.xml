@@ -36,14 +36,24 @@
         android:textColor="@color/colorAccent"/>
 
     <Button
+        android:id="@+id/vend_btn_chart"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/vend_action_chart"
+        app:layout_constraintEnd_toEndOf="@+id/vend_display"
+        app:layout_constraintTop_toBottomOf="@+id/vend_display" />
+
+    <Button
         android:id="@+id/vend_btn_return"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/vend_action_return"
-        app:layout_constraintEnd_toEndOf="@+id/vend_display"
-        app:layout_constraintTop_toBottomOf="@+id/vend_display" />
+        app:layout_constraintEnd_toEndOf="@+id/vend_btn_chart"
+        app:layout_constraintTop_toBottomOf="@+id/vend_btn_chart" />
 
     <Button
         android:id="@+id/vend_btn_purchase_1"
@@ -79,7 +89,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/vend_action_purchase_default"
         app:layout_constraintEnd_toEndOf="@+id/vend_btn_purchase_3"
-        app:layout_constraintTop_toBottomOf="@+id/vend_btn_purchase_2" />
+        app:layout_constraintTop_toBottomOf="@+id/vend_btn_purchase_3" />
 
     <Button
         android:id="@+id/vend_btn_insert"
